@@ -4,22 +4,27 @@ library(raster)
 library(ggplot2)
 library(marmap)
 library(grid)
+library(sf)
 
-fileName = paste0("map/mapPlot_","190925",".png")
+# Load ERSI ASCII grid and transform into tibble of measured elevations
+SDNY <- 
+  raster("asc/mapMerge.asc") %>%
+  convBNGtoGeo() %>%
+  rasterToPoints() %>%
+  as_tibble() %>%
+  rename(
+    Longitude = x,
+    Latitude  = y,
+    Elevation = mapMerge) %>%
+  mutate(
+    Longitude = round(Longitude*1e3,0),
+    Latitude = round(Latitude*1e3,0),    
+    Elevation = ifelse(Elevation <= 0, NA_real_,Elevation))
 
-SDNY <- raster("asc/mapMerge.asc")
-Klol <- convBNGtoGeo(SDNY)
-#SDNY.p <- rasterToPoints(SDNY)
-SDNY.p <- rasterToPoints(Klol)
-map.p <-SDNY.p
-df <- data.frame(map.p) %>% 
-  mutate(mapMerge = case_when(
-    mapMerge <= 0 ~ NA_real_,
-    TRUE ~ mapMerge))
-colnames(df) <- c("Long", "Lat", "Elevation")
 
-df <- df %>% mutate(Lat=round(Lat*1e3,0),
-             Long=round(Long*1e3,0))
+coordsFull <-
+  read_csv("coordsOfExtendedWainwrights.csv") %>%
+  filter(WO==0) 
 
 source('D:/University/2019-20/Wainwrights/travelleR/plotPoints.R', echo=TRUE)
 
@@ -54,4 +59,6 @@ mapPlot<-ggplot(data=df, aes(y=Lat, x=Long))+
   labs(fill = "Elevation (m)", x = "Longitude", y = "Latitude") +
   scale_x_continuous(labels=function(x)x*1e-3)+
   scale_y_continuous(labels=function(x)x*1e-3)
+
+fileName = paste0("map/mapPlot_","190925",".png")
 ggsave(file=fileName)

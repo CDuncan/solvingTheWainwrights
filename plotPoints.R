@@ -3,9 +3,6 @@ library(TSP)
 library(geosphere)
 
 
-coordsFull <-
-  read_csv("coordsOfExtendedWainwrights.csv") %>%
-  filter(WO==0) 
 
 coords <- coordsFull %>%
   dplyr::select(longitude,latitude)
