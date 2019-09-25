@@ -8,8 +8,8 @@ library(sf)
 
 # Load ERSI ASCII grid and transform into tibble of measured elevations
 SDNY <- 
-  raster("asc/mapMerge.asc") %>%
-  convBNGtoGeo() %>%
+  raster("asc/mapMerge.asc", crs="+init=epsg:27700") %>%
+  projectRaster(crs= "+init=epsg:4326") %>%
   rasterToPoints() %>%
   as_tibble() %>%
   rename(
@@ -28,6 +28,9 @@ coordsFull <-
 
 source('D:/University/2019-20/Wainwrights/travelleR/plotPoints.R', echo=TRUE)
 
+
+
+# Plotting ----
 
 colourSet <-rev(etopo.colors(150)[-(1:15)])[-(1:35)]
 
