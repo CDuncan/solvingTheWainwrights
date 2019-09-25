@@ -4,25 +4,25 @@ library(raster)
 library(ggplot2)
 library(marmap)
 library(grid)
+
 fileName = paste0("map/mapPlot_","190925",".png")
 
 SDNY <- raster("asc/mapMerge.asc")
-SDNY.p <- rasterToPoints(SDNY)
+Klol <- convBNGtoGeo(SDNY)
+#SDNY.p <- rasterToPoints(SDNY)
+SDNY.p <- rasterToPoints(Klol)
 map.p <-SDNY.p
 df <- data.frame(map.p) %>% 
   mutate(mapMerge = case_when(
     mapMerge <= 0 ~ NA_real_,
     TRUE ~ mapMerge))
-colnames(df) <- c("Easting", "Northing", "Elevation")
-
-source('D:/University/2019-20/Wainwrights/R/mapping/convertToLongLat.R', echo=TRUE)
+colnames(df) <- c("Long", "Lat", "Elevation")
 
 df <- df %>% mutate(Lat=round(Lat*1e3,0),
              Long=round(Long*1e3,0))
 
-source('D:/University/2019-20/Wainwrights/R/mapping/plotPoints.R', echo=TRUE)
+source('D:/University/2019-20/Wainwrights/travelleR/plotPoints.R', echo=TRUE)
 
-sites <- sorted
 
 colourSet <-rev(etopo.colors(150)[-(1:15)])[-(1:35)]
 

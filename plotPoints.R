@@ -42,7 +42,7 @@ ordering <- as_tibble(tour_order) %>%
 coordsFinal <- coordsFull %>%
   dplyr::select(longitude,latitude,metres)
 
-sorted <- coordsFinal %>%
+sites <- coordsFinal %>%
   mutate(startOrder = row_number()) %>%
   left_join(ordering,c("startOrder"="value")) %>%
   arrange(order) %>%
