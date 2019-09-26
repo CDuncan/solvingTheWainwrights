@@ -8,8 +8,8 @@ library(sf)
 
 # Load ERSI ASCII grid and transform into tibble of measured elevations
 SDNY <- 
-  raster("asc/mapMerge.asc", crs="+init=epsg:27700") %>%
-  projectRaster(crs= "+init=epsg:4326") %>%
+  raster("asc/mapMerge.asc", crs = "+init=epsg:27700") %>%
+  projectRaster(crs = "+init=epsg:4326") %>%
   rasterToPoints() %>%
   as_tibble() %>%
   rename(
