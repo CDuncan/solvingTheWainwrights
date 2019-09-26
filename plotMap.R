@@ -26,7 +26,7 @@ coordsFull <-
   read_csv("coordsOfExtendedWainwrights.csv") %>%
   filter(WO==0) 
 
-source('D:/University/2019-20/Wainwrights/travelleR/plotPoints.R', echo=TRUE)
+source('D:/University/2019-20/Wainwrights/travelleR/geoTSP.R', echo=TRUE)
 
 
 
