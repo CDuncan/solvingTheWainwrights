@@ -22,9 +22,6 @@ SDNY <-
     Elevation = ifelse(Elevation <= 0, NA_real_,Elevation))
 
 
-coordsFull <-
-  read_csv("coordsOfExtendedWainwrights.csv") %>%
-  filter(WO==0) 
 
 source('D:/University/2019-20/Wainwrights/travelleR/geoTSP.R', echo=TRUE)
 
