@@ -9,7 +9,7 @@ selectedCells <-
 
 # make a list of file names, perhaps like this:  
 f <- 
-  list.files(path="asc/Extracted",pattern = ".asc",full.names = T) %>% 
+  list.files(path="asc/t5_extracted",pattern = ".asc",full.names = T) %>% 
   as_tibble() %>%
   filter(str_detect(value,selectedCells)) %>%
   pull(value)
@@ -18,4 +18,4 @@ f <-
 r <- 
   lapply(f, raster) %>%
   do.call("merge",.) %>%  # as you have the arguments as a list call 'merge' with 'do.call'  
-  writeRaster("asc/mapMerge.asc")  #Write Ascii Grid  
+  writeRaster("asc/t5_mapMerge.asc")  #Write Ascii Grid  
