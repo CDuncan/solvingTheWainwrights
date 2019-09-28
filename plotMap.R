@@ -20,7 +20,8 @@ SDNY <-
   mutate(
     Longitude = round(Longitude*1e3,0),
     Latitude = round(Latitude*1e3,0),    
-    Elevation = ifelse(Elevation <= 0, -100,Elevation))
+    Elevation = ifelse(Elevation <= 0, NA_real_,Elevation)) %>%
+  mutate(Elevation = floor(Elevation/36))
 
 
 
@@ -30,13 +31,14 @@ source('D:/University/2019-20/Wainwrights/travelleR/geoTSP.R', echo=TRUE)
 
 # Plotting ----
 
-colourSet <-rev(etopo.colors(150)[-(1:15)])[-(1:35)]
+listColours <- cpt(pal="jm_sd_sd_b",n=54)[c(TRUE, FALSE)]
+
+
 
 mapPlot<-ggplot(data=SDNY, aes(y=Latitude, x=Longitude))+
-  geom_raster(aes(fill=Elevation))+
-  scale_fill_gradientn(colours = cpt(pal="wkp_country_wiki_france"),
-                       na.value = "#afdce0",
-                       limits = c(-1000,1000))+
+  geom_raster(aes(fill=factor(Elevation)))+
+  scale_fill_manual(values = listColours,
+                       na.value = "#afdce0")+
   geom_point(data=sites,
              aes(y=latitude, x=longitude),
              color="white",
@@ -60,10 +62,8 @@ mapPlot<-ggplot(data=SDNY, aes(y=Latitude, x=Longitude))+
   scale_x_continuous(labels=function(x)x*1e-3)+
   scale_y_continuous(labels=function(x)x*1e-3)
 
-fileName = paste0("map/mapPlot_","190927",".png")
+fileName = paste0("map/mapPlot_","190928",".png")
 ggsave(file=fileName)
-
-
 
 
 if (FALSE){
