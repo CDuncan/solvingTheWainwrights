@@ -1,4 +1,3 @@
-
 *.zip
 *.gml
 *.xml
@@ -8,3 +7,11 @@
 asc/terrain-5-dtm_3084650/OS-EULA-19-20.pdf
 asc/terrain-5-dtm_3084650/contents_order_1293387.txt
 asc/terrain-5-dtm_3084650/citations_orders_1293387.txt
+landCover
+map/mapPlot_191001.png
+map/mapPlot_LC_191001.png
+shape/LDNPA_Boundary/LDNPA_Boundary.cst
+shape/LDNPA_Boundary/LDNPA_Boundary.dbf
+shape/LDNPA_Boundary/LDNPA_Boundary.shp
+shape/LDNPA_Boundary/LDNPA_Boundary.shx
+shape/LDNPA_Boundary/wfsrequest.txt
