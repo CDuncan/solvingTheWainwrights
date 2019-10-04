@@ -1,0 +1,22 @@
+class,classNumber,Red,Green,Blue,Hex
+Broadleaved woodland,1,255,0,0,#FF0000
+Coniferous Woodland,2,0,102,0,#006600
+Arable and Horticulture,3,115,38,0,#732600
+Improved Grassland,4,0,255,0,#00FF00
+Neutral Grassland,5,127,229,127,#7FE57F
+Calcareous Grassland,6,112,168,0,#70A800
+Acid grassland,7,153,129,0,#998100
+"Fen, Marsh and Swamp",8,255,255,0,#FFFF00
+Heather,9,128,26,128,#801A80
+Heather grassland,10,230,140,166,#E68CA6
+Bog,11,0,128,115,#008073
+Inland Rock,12,210,210,255,#D2D2FF
+Saltwater,13,0,0,128,#000080
+Freshwater,14,0,0,255,#0000FF
+Supra-littoral Rock,15,204,179,0,#CCB300
+Supra-littoral Sediment,16,204,179,0,#CCB300
+Littoral Rock,17,255,255,128,#FFFF80
+Littoral sediment,18,255,255,128,#FFFF80
+Saltmarsh,19,128,128,255,#8080FF
+Urban,20,0,0,0,#000000
+Suburban,21,128,128,128,#808080
