@@ -8,7 +8,8 @@ library(ggspatial)
 
 use_sp()
 
-initGRASS(gisBase  = "C:/OSGeo4W64/apps/grass/grass76",
+
+initGRASS(gisBase  = "C:/Program Files/GRASS GIS 7.6",
           gisDbase = getwd(),
           location = 'grassdata',
           mapset   = "PERMANENT", 
@@ -18,6 +19,19 @@ execGRASS("g.proj",
           georef = file.path(getwd(), 'terrainTestingArea.tif'),
           flags = c('t', 'c'))
 
+
+# Import start and end
+execGRASS('v.in.ogr',
+          input = file.path(getwd(), 'start.geojson'),
+          output = "vStart",
+          flags  = 'overwrite')
+
+execGRASS('v.in.ogr',
+          input = file.path(getwd(), 'end.geojson'),
+          output = "vEnd",
+          flags  = 'overwrite')
+
+# Import elevation map
 execGRASS('r.in.gdal',
           input  = file.path(getwd(), 'terrainTestingArea.tif'),
           output = 'terrainTestingArea',
@@ -28,10 +42,11 @@ gmeta()
 
 execGRASS('r.slope.aspect',
           elevation = 'terrainTestingArea',
-          slope = 'slopeMap')
+          slope = 'slopeMap',
+          flags  = 'overwrite')
 
 
-
+# Calculate Tobler Layer
 execGRASS('r.mapcalc',
           expression = "tobler1 = tan( slopeMap )", flags = "overwrite")
 execGRASS('r.mapcalc',
@@ -46,46 +61,38 @@ execGRASS('r.mapcalc',
           expression = "tobler2 = 6000*tobler1", flags = "overwrite")
 execGRASS('r.mapcalc',
           expression = "tobler = 5/tobler2", flags = "overwrite")
-plot(readRAST("tobler"))
+#plot(readRAST("tobler"))
 
 
 
-
-execGRASS('r.mapcalc',
-          expression = toblerFunction,
-          flags = "overwrite")
 
 
 execGRASS('r.cost',
           input = 'tobler',
-          output = 'costMap')
+          output = 'costMap',
+          start_points = "vStart",
+          stop_points =  "vEnd",
+          flags  = 'overwrite')
 
 
-slopeMap <- readRAST('slopeMap')
-terrainTest <- readRAST('tobler') %>% 
-  st_as_sf() 
+# Export maps
+execGRASS('r.out.gdal',
+          input = 'tobler',
+          output = 'toblerOut.tif',
+          format = 'GTiff',
+          flags  = 'overwrite')
 
+execGRASS('r.out.gdal',
+          input = 'slopeMap',
+          output = 'slopeMap.tif',
+          format = 'GTiff',
+          flags  = 'overwrite')
 
-
-
-library(Rsagacmd)
-saga <- saga_gis("C:/OSGeo4W64/apps/saga-ltr/saga_cmd.exe")
-dem <- raster('terrainTestingArea.tif')
-
-
-slope <- dem
-dem %>%
-  saga$ta_morphometry$slope_aspect_curvature(SLOPE = slope, UNIT_SLOPE = 1)
-
-saga$io_gdal$export_geotiff(GRIDS = "slope", FILE ="slope.tif")
-
-
-library(RSAGA)
-env <- rsaga.env()
-
-
-
-
+execGRASS('r.out.gdal',
+          input = 'costMap',
+          output = 'costMap.tif',
+          format = 'GTiff',
+          flags  = 'overwrite')
 
 
 
