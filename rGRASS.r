@@ -7,14 +7,11 @@ library(tidyverse)
 library(ggspatial)
 
 use_sp()
-
-
 initGRASS(gisBase  = "C:/Program Files/GRASS GIS 7.6",
           gisDbase = getwd(),
           location = 'grassdata',
           mapset   = "PERMANENT", 
           override = TRUE)
-
 execGRASS("g.proj", 
           georef = file.path(getwd(), 'terrainTestingArea.tif'),
           flags = c('t', 'c'))
@@ -22,24 +19,22 @@ execGRASS("g.proj",
 
 # Import start and end
 execGRASS('v.in.ogr',
-          input = file.path(getwd(), 'start.geojson'),
+          input = file.path(getwd(), 'newStart.geojson'),
           output = "vStart",
           flags  = 'overwrite')
-
 execGRASS('v.in.ogr',
-          input = file.path(getwd(), 'end.geojson'),
+          input = file.path(getwd(), 'newEnds.geojson'),
           output = "vEnd",
           flags  = 'overwrite')
+
 
 # Import elevation map
 execGRASS('r.in.gdal',
           input  = file.path(getwd(), 'terrainTestingArea.tif'),
           output = 'terrainTestingArea',
           flags  = 'overwrite')
-
-execGRASS('g.region', raster = 'terrainTestingArea')
-gmeta()
-
+execGRASS('g.region', 
+          raster = 'terrainTestingArea')
 execGRASS('r.slope.aspect',
           elevation = 'terrainTestingArea',
           slope = 'slopeMap',
@@ -47,10 +42,12 @@ execGRASS('r.slope.aspect',
 
 
 # Calculate Tobler Layer
+#execGRASS('r.mapcalc',
+#          expression = "tobler1 = tan( slopeMap )", flags = "overwrite")
 execGRASS('r.mapcalc',
-          expression = "tobler1 = tan( slopeMap )", flags = "overwrite")
-execGRASS('r.mapcalc',
-          expression = "tobler2 = tobler1 + 0.05", flags = "overwrite")
+          expression = "tobler2 = tan( slopeMap )", flags = "overwrite")
+#execGRASS('r.mapcalc',
+#          expression = "tobler2 = tobler1 + 0.05", flags = "overwrite")
 execGRASS('r.mapcalc',
           expression = "tobler1 = abs(tobler2)", flags = "overwrite")
 execGRASS('r.mapcalc',
@@ -64,14 +61,16 @@ execGRASS('r.mapcalc',
 #plot(readRAST("tobler"))
 
 
-
-
-
 execGRASS('r.cost',
           input = 'tobler',
           output = 'costMap',
           start_points = "vStart",
           stop_points =  "vEnd",
+          flags  = c('overwrite','k'))
+execGRASS('r.drain',
+          input = 'costMap',
+          output = 'drainMap',
+          start_points = "vEnd",
           flags  = 'overwrite')
 
 
@@ -81,19 +80,18 @@ execGRASS('r.out.gdal',
           output = 'toblerOut.tif',
           format = 'GTiff',
           flags  = 'overwrite')
-
 execGRASS('r.out.gdal',
           input = 'slopeMap',
           output = 'slopeMap.tif',
           format = 'GTiff',
           flags  = 'overwrite')
-
 execGRASS('r.out.gdal',
           input = 'costMap',
           output = 'costMap.tif',
           format = 'GTiff',
           flags  = 'overwrite')
-
-
-
-
+execGRASS('r.out.gdal',
+          input = 'drainMap',
+          output = 'drainMap.tif',
+          format = 'GTiff',
+          flags  = 'overwrite')
