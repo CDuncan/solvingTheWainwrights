@@ -4,46 +4,64 @@ library(rgdal)
 library(tidyverse)
 
 
+
+
+
 # Chunk based movement ----
 # Translate left and right using chunks
 
-shiftCol <- 100  # Shift to the right by 100
-shiftRow <- 100
-
-loadedMap <- raster("terr5.tif")
-colCount <- dim(loadedMap)[2]
-blocks <- blockSize(loadedMap)
-
-blocks$shiftedRow <- blocks$row + shiftRow
-blocks$shiftedRow[1] <- 1
-
-blocks$nrows[length(blocks$nrows)] <- blocks$nrows[length(blocks$nrows)] - shiftRow
-addCol <- matrix(NA, ncol = shiftCol, nrow = 1)
-
-
-out <- writeStart(loadedMap, paste0("shiftRaster/out.tif"), overwrite=TRUE)
-for (i in 1:blocks$n){
+shiftRaster <- function(loadedRaster,shiftX,shiftY,outputFile){
+  outputFile <- paste0("shiftRaster/",outputFile,"_X",shiftX,"_Y",shiftY,".tif")
   
-  cat('\r',i,'/',blocks$n)
+  colCount <- ncol(loadedRaster)
   
-  blockToFrame <-
-    getValues(loadedMap, row = blocks$row[i], nrows = blocks$nrows[i]) %>% 
-    matrix(ncol = colCount,  byrow = TRUE) %>%
-    as.data.frame()
+  blocks <- blockSize(loadedRaster)
+  blocks$shiftedRow <- blocks$row + shiftY
+  blocks$shiftedRow[1] <- 1
+  blocks$nrows[length(blocks$nrows)] <- blocks$nrows[length(blocks$nrows)] - shiftY
   
-  blockToFrame <- blockToFrame %>%
-    .[1:(length(.)-shiftCol)] %>%
-    cbind(addCol,.) 
+  addCol <- matrix(NA, ncol = shiftX, nrow = 1)
+  
+  output <- writeStart(loadedRaster, outputFile, overwrite=TRUE)
+  
+  for (i in 1:blocks$n){
+    cat('\r',i,'/',blocks$n,"  ")
     
-  blockToFrame <- as.vector(t(blockToFrame))
-  if (i == 1)
-    {blockToFrame <- c( rep(NA, shiftRow*colCount),blockToFrame)}
+    blockToFrame <-
+      getValues(loadedRaster, row = blocks$row[i], nrows = blocks$nrows[i]) %>% 
+      matrix(ncol = colCount,  byrow = TRUE) %>%
+      as.data.frame()
+    
+    blockToFrame <- blockToFrame %>%
+      .[1:(length(.)-shiftX)] %>%
+      cbind(addCol,.) 
+    
+    blockToFrame <- as.vector(t(blockToFrame))
+    if (i == 1 & shiftY != 0)
+    {blockToFrame <- c( rep(NA, shiftY*colCount),blockToFrame)}
+    
+    output <- writeValues(output,blockToFrame,blocks$shiftedRow[i])
+    
+  }
   
-  out <- writeValues(out,blockToFrame,blocks$shiftedRow[i])
-  
+  output <- writeStop(output)
 }
 
-out <- writeStop(out)
+
+loadedMap <- raster("terr5.tif")
+
+xy <- tibble(x = c(0,1,1,2),
+             y = c(1,0,1,1))
+
+for (i in 1:4) {
+  shiftRaster(loadedRaster = loadedMap, shiftX = xy$x[i], shiftY = xy$y[i], outputFile = "shifted")
+}
+
+
+
+
+
+
 
 
 
